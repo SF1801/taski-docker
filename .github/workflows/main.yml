@@ -13,7 +13,7 @@ jobs:
       postgres:
         image: postgres:13.10
         # Указываем имя тестовой базы, имя и пароль пользователя в открытом виде,
-        # ведь эта база будет работать только во время прогона тестов 
+        # ведь эта база будет работать только во время прогона тестов
         env:
           POSTGRES_USER: django_user
           POSTGRES_PASSWORD: django_password
@@ -50,8 +50,12 @@ jobs:
       run: |
         python -m flake8 backend/
         cd backend/
-        python manage.py test
+        python manage.py test 
+# .github/workflows/main.yml
 
+# Тут задачи тестирования и сборки образа
+# ...
+# Добавляем новую задачу: деплой приложения
   build_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
     runs-on: ubuntu-latest
@@ -87,6 +91,7 @@ jobs:
           # устанавливаем тег latest, чтобы потом
           # на сервере и в docker-compose.yml не указывать версию
           tags: paveltarasov1/taski_backend:latest
+
   frontend_tests:
     runs-on: ubuntu-latest
 
@@ -106,7 +111,7 @@ jobs:
         npm ci
 
     - name: Test frontend
-      # Запускаем тесты 
+      # Запускаем тесты
       run: |
         cd frontend/
         npm run test
@@ -130,6 +135,7 @@ jobs:
           context: ./frontend/
           push: true
           tags: paveltarasov1/taski_frontend:latest
+
   build_gateway_and_push_to_docker_hub:
     name: Push gateway Docker image to DockerHub
     runs-on: ubuntu-latest
@@ -164,7 +170,7 @@ jobs:
     # Копируем docker-compose.production.yml на продакшен-сервер
     - name: Copy docker-compose.yml via ssh
       uses: appleboy/scp-action@master
-    # Передаём параметры для action appleboy/scp-action:  
+    # Передаём параметры для action appleboy/scp-action:
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
@@ -179,9 +185,9 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        # Параметр script передаёт в action appleboy/ssh-action команды, 
-        # которые нужно выполнить на сервере,   
-        # с которым установлено соединение  
+        # Параметр script передаёт в action appleboy/ssh-action команды,
+        # которые нужно выполнить на сервере, 
+        # с которым установлено соединение
         script: |
           cd taski
           # Выполняет pull образов с Docker Hub
